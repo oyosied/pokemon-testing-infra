@@ -11,6 +11,7 @@ def make_api_get_request(url):
         response.raise_for_status()  # Raises an HTTPError if the response status code is 4XX or 5XX
         assert response.headers['Content-Type'] == 'application/json; charset=utf-8', "Expected JSON response"
         data = response.json()
+        data['status_code'] = response.status_code
         logger.info(f"Response from '{url}':\n{data}")
         return data
     except requests.exceptions.HTTPError as e:
