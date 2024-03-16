@@ -1,4 +1,5 @@
 import pytest
+import requests
 
 from automation_infra.api_handler.pokemon_api import get_pokemon_type_data, get_pokemon_data_by_type
 from automation_infra.common.common import ApiPath, HEAVIEST_POKEMONS
@@ -16,6 +17,14 @@ def test_pokemon_types(type_url):
     data = make_api_get_request(type_url)
     assert len(data['results']) == 20
 
+
+@pytest.mark.parametrize("invalid_type", ["@", "123", "randomText"])
+def test_invalid_pokemon_type(invalid_type):
+    try:
+        response = make_api_get_request(f'{ApiPath.POKEMON_TYPES}/{invalid_type}')
+        assert False, "Expected HTTPError but got a successful response"
+    except requests.exceptions.HTTPError as e:
+        assert e.response.status_code == 404
 
 def test_fire_type_pokemon():
     data = get_pokemon_type_data()
